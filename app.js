@@ -1,8 +1,8 @@
 const handleRouter = require('./src/router/find')
-const serverHandle = (req, res) => {
+const serverHandle =async (req, res) => {
     // 设置返回格式
     res.setHeader('Content-type', 'application/json')
-    const webData = handleRouter(req, res);
+    const webData =await handleRouter(req, res);
     if (webData) {
         res.end(JSON.stringify(webData))
         return 
