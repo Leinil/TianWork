@@ -7,7 +7,6 @@ const serverHandle = async (req, res) => {
         'Access-Control-Allow-Origin': '*'//可以是*，也可以是跨域的地址
     })
     const webData = await handleRouter(req, res);
-    console.log(webData,'webdata')
     if (webData) {
         res.end(JSON.stringify(webData))
         return

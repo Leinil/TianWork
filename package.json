@@ -12,6 +12,7 @@
   "devDependencies": {
     "cheerio": "^1.0.0-rc.3",
     "cross-env": "^7.0.2",
-    "nodemon": "^2.0.4"
+    "nodemon": "^2.0.4",
+    "superagent": "^5.3.1"
   }
 }
