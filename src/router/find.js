@@ -10,7 +10,11 @@ const handleRouter = async (req, res) => {
     if (method === 'POST' && path === 'findPosition') {
         const paqures = await getPostData(req).then(async res => {
             const params = querystring.parse(res)
-            const crawlerRes = await singleCrawler(params)
+            if (params.searchType === 'single') {
+                const crawlerRes = await singleCrawler(params)
+            } else {
+                const crawlerRes = await autoCrawler(params)
+            }
             if (Array.isArray(crawlerRes)) {
                 return {
                     code: 200,
@@ -41,7 +45,26 @@ const getPostData = (req) => {
     })
     return promise
 }
+const autoCrawler = async (params) => {
+    // 并发读取远程URL
+    let { webUrl } = params
+    const finallRes=[];
+    const pageStart = typeof (Number(webUrl.substr(-1))) === 'number' ? Number(webUrl.substr(-1)) : 1
+    const urls = [];
+    for (let i = pageStart; i <= 7; i++) {
+        urls.push(i)
+    }
+    // const textPromises = urls.map(async url => {
+    //     webUrl=
+    //     const response = await fetch(url);
+    //     return response.text();
+    // });
 
+    // 按次序输出
+    for (const textPromise of textPromises) {
+        console.log(await textPromise);
+    }
+}
 // 爬虫
 function singleCrawler(params) {
     const { webUrl, productName, priceClass = '.a-size-base-plus', parentClass = '.s-result-item' } = params;
@@ -52,8 +75,8 @@ function singleCrawler(params) {
                     if (err) {
                         // 爬取过程中报错
                         return resolve({
-                            msg:err,
-                            data:500
+                            msg: err,
+                            data: 500
                         })
                     }
                     const $ = cheerio.load(res.text)
@@ -61,7 +84,7 @@ function singleCrawler(params) {
                     $(priceClass).each(function (index, item) {
                         const eachName = $(item).text();
                         if (eachName.indexOf(productName) !== -1) {
-                            const page = isNumber(webUrl.substr(-1)) ? 1 : Number(webUrl.substr(-1))
+                            const page = isNumber(Number(webUrl.substr(-1))) ? Number(webUrl.substr(-1)) : 1
                             // 获取位置信息
                             const num = $(item).parents(parentClass).attr('data-index');
                             // 获取图片
