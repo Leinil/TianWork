@@ -12,10 +12,10 @@ const handleRouter = async (req, res) => {
             const params = querystring.parse(res)
             let crawlerRes = []
             if (params.searchType === 'single') {
-                console.log('单页面查询')
+                console.log('----------------单页面查询----------------')
                 crawlerRes = await singleCrawler(params)
             } else {
-                console.log('多页面查询')
+                console.log('----------------多页面查询----------------')
                 crawlerRes = await autoCrawler(params)
             }
             if (Array.isArray(crawlerRes)) {
@@ -53,7 +53,7 @@ const autoCrawler = async (params) => {
     let { webUrl } = params
     const pageStart = typeof (Number(webUrl.substr(-1))) === 'number' ? Number(webUrl.substr(-1)) : 1
     const urls = [];
-    const finallRes=[];
+    let finallRes=[];
     for (let i = pageStart; i <= 7; i++) {
         urls.push(i)
     }
@@ -66,10 +66,9 @@ const autoCrawler = async (params) => {
         webArr.splice(pageIndex + 5, 1, url)
         params['webUrl'] = webArr.join('');
         const response = await singleCrawler(params);
-        
-        finallRes.push(response)
-        console.log(response,'response')
-        console.log(finallRes,'finallRes')
+        if(response.length>0){
+            finallRes=finallRes.concat(response)
+        }
     }
     return finallRes
 }
@@ -79,10 +78,10 @@ function waitRes(){
 }
 // 爬虫
 function singleCrawler(params) {
-    const { webUrl, productName, priceClass = '.a-size-base-plus', parentClass = '.s-result-item' } = params;
+    const { webUrl, productName, priceClass = '.a-size-base-plus', parentClass = '.s-result-item',Cookie } = params;
     return new Promise((resolve, reject) => {
         try {
-            superagent.get(webUrl).set('Cookie', 'session-id=144-9264453-9303432; session-id-time=2082787201l; i18n-prefs=USD; sp-cdn="L5Z9:CN"; x-wl-uid=16XEs/589XbEm7t2FwfRCzB6lCX3YsFQGgA1T12U/nwshIkcmgchxve6txcvOAtZyTfz36eXmgZ0=; ubid-main=130-8641508-2666163; session-token=fwJ8iTidzkLYWdnYnMPqET8L3FhCi+XbIJxm7p8sEKaUMexUBaJXUurJ3+xjbr+vJHR0QiyDv/UN4w4qi3TM8c6KGutayLxIWeHBR6nSyNaUbf1HAOOSwWZ/5wuY2D2Oj0EhSv1ZHi+aW3B7UyhoAYqyci9tFNeWbjEKfB05X6BNHcVff3n/8/RfBVowKZuAQUzCNr3rkdscC7kkW4Sgo7YKbptadOPUo4tpem/hvCau1QpHtgpGi3TLRUgZidbX; csm-hit=tb:FF9M4RXG0SE10KYS990G+s-FF9M4RXG0SE10KYS990G|1594970060906&t:1594970060906&adb:adblk_no')
+            superagent.get(webUrl).set('Cookie', 'session-id=140-8673481-2221317; session-id-time=2082787201l; i18n-prefs=USD; sp-cdn="L5Z9:CN"; x-wl-uid=1JjZQYBw/uO+y/U80tIyM26syjITrMiqiP2sthg2aeJYWT0ZGbAvBvWczb4kKWU9cmID5zIv2Pe8=; ubid-main=133-3905626-2714027; session-token=X4KSE9t1uWTgvTaqtnhcO7SleOsOtXL0F312GmPpr4hdcd3HQKsUb3LkAXCtmsn8kg6t1xTd0jlshaHIvwXi3WMhvAb7aOu7cpruGCHLvdujAJKNKEE7hKMUBl+mtsrpRrediZnTKu+2zJARFXApl+oX/gsURZty/dClyzujusBTpwFVU9P0cP8mLCu33HlfgEkbxvoBjX6VmIwbEhkN/n+x50ILo/5uyCKhZ2jl6rinaYbzGXFm7O5SD1NkiE96; csm-hit=tb:s-E2RY5V357YYFGV3GQFFS|1594991867257&t:1594991867257&adb:adblk_no')
                 .end(function (err, res) {
                     if (err) {
                         // 爬取过程中报错
@@ -91,9 +90,10 @@ function singleCrawler(params) {
                             data: 500
                         })
                     }
+                    console.log(` 针对网址:  ${webUrl}    ---------------        进入分析阶段 `)
                     const $ = cheerio.load(res.text)
                     const findArr = []
-                    $(priceClass).each(function (index, item) {
+                    $('.a-size-base-plus').each(function (index, item) {
                         const eachName = $(item).text();
                         if (eachName.indexOf(productName) !== -1) {
                             const page = isNumber(Number(webUrl.substr(-1))) ? Number(webUrl.substr(-1)) : 1
