@@ -81,7 +81,7 @@ function singleCrawler(params) {
     const { webUrl, productName, priceClass = '.a-size-base-plus', parentClass = '.s-result-item',Cookie } = params;
     return new Promise((resolve, reject) => {
         try {
-            superagent.get(webUrl).set('Cookie', 'session-id=140-8673481-2221317; session-id-time=2082787201l; i18n-prefs=USD; sp-cdn="L5Z9:CN"; x-wl-uid=1JjZQYBw/uO+y/U80tIyM26syjITrMiqiP2sthg2aeJYWT0ZGbAvBvWczb4kKWU9cmID5zIv2Pe8=; ubid-main=133-3905626-2714027; session-token=X4KSE9t1uWTgvTaqtnhcO7SleOsOtXL0F312GmPpr4hdcd3HQKsUb3LkAXCtmsn8kg6t1xTd0jlshaHIvwXi3WMhvAb7aOu7cpruGCHLvdujAJKNKEE7hKMUBl+mtsrpRrediZnTKu+2zJARFXApl+oX/gsURZty/dClyzujusBTpwFVU9P0cP8mLCu33HlfgEkbxvoBjX6VmIwbEhkN/n+x50ILo/5uyCKhZ2jl6rinaYbzGXFm7O5SD1NkiE96; csm-hit=tb:s-E2RY5V357YYFGV3GQFFS|1594991867257&t:1594991867257&adb:adblk_no')
+            superagent.get(webUrl).set('Cookie', Cookie)
                 .end(function (err, res) {
                     if (err) {
                         // 爬取过程中报错
